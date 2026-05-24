@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Building a Bank You Can Actually Trust — Rahul Bhushan Vemula</title>
+<meta name="description" content="How I built a secure online banking system end-to-end — Spring Boot, Spring Security, JWT, and React — and the design decisions that keep money movement honest." />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Building a Bank You Can Actually Trust" />
+<meta property="og:description" content="A secure, end-to-end online banking system in Spring Boot + React — and the reasoning behind the security model." />
+<meta property="og:url" content="https://rahulvemula11.github.io/banking-system.html" />
+<meta property="og:image" content="https://rahulvemula11.github.io/og-banner.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#fafaf7;--bg-card:#ffffff;--bg-soft:#f4f3ee;
+    --ink:#0f1b2d;--ink-2:#2c3a52;--ink-dim:#5a6478;--ink-mute:#8a92a3;
+    --accent:#1e3a5f;--accent-2:#2c4a73;--accent-soft:#1e3a5f0a;
+    --line:#e4e2db;--line-strong:#d4d0c4;
+    --shadow-card:0 1px 3px rgba(15,27,45,.04);
+    --sans:'Inter',system-ui,-apple-system,sans-serif;
+    --serif:'Source Serif 4',Georgia,serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --maxw:720px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);font-weight:400;line-height:1.7;color:var(--ink-2);background:var(--bg);-webkit-font-smoothing:antialiased}
+  nav{position:sticky;top:0;z-index:50;background:rgba(250,250,247,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:var(--maxw);margin:0 auto;padding:18px 28px;display:flex;justify-content:space-between;align-items:center}
+  .mark{font-family:var(--serif);font-weight:600;font-size:18px;color:var(--ink);text-decoration:none}
+  .nav-back{font-size:14px;color:var(--ink-dim);text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:color .2s}
+  .nav-back:hover{color:var(--accent)}
+  article{max-width:var(--maxw);margin:0 auto;padding:72px 28px 60px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--accent);background:var(--accent-soft);padding:7px 14px;border-radius:99px;border:1px solid #1e3a5f1a;margin-bottom:28px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#16a34a}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,5.5vw,52px);line-height:1.1;letter-spacing:-.02em;color:var(--ink);margin-bottom:22px}
+  h1 em{font-style:italic;color:var(--accent)}
+  .meta{display:flex;flex-wrap:wrap;gap:16px;align-items:center;font-size:14px;color:var(--ink-mute);padding-bottom:36px;margin-bottom:44px;border-bottom:1px solid var(--line)}
+  .meta .sep{color:var(--line-strong)}
+  .tag{font-family:var(--mono);font-size:12px;color:var(--accent-2);background:var(--bg-soft);padding:3px 10px;border-radius:5px}
+  .lede{font-size:21px;line-height:1.6;color:var(--ink-2);font-weight:400;margin-bottom:40px}
+  .lede strong{color:var(--ink);font-weight:600}
+  h2{font-family:var(--serif);font-weight:600;font-size:28px;letter-spacing:-.01em;color:var(--ink);margin:52px 0 18px}
+  h2 .num{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--accent);margin-right:12px;vertical-align:middle}
+  p{margin-bottom:22px;font-size:17px}
+  p strong{color:var(--ink);font-weight:600}
+  article a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+  .callout{background:var(--bg-card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:24px 26px;margin:32px 0;box-shadow:var(--shadow-card)}
+  .callout .label{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .callout p{margin:0;font-size:16px;color:var(--ink-2)}
+  .pipeline{display:flex;flex-direction:column;margin:32px 0;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-card)}
+  .step{display:flex;gap:18px;padding:20px 24px;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:none}
+  .step-n{flex:none;width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;font-family:var(--mono);font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center}
+  .step-body h4{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:4px}
+  .step-body p{margin:0;font-size:15px;color:var(--ink-dim)}
+  code{font-family:var(--mono);font-size:14px;background:var(--bg-soft);padding:2px 7px;border-radius:5px;color:var(--accent-2)}
+  ul{margin:0 0 22px 0;padding-left:0;list-style:none}
+  ul li{position:relative;padding-left:26px;margin-bottom:12px;font-size:17px}
+  ul li::before{content:"";position:absolute;left:4px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .post-footer{max-width:var(--maxw);margin:0 auto;padding:0 28px 90px}
+  .cta-box{background:var(--ink);color:#fff;border-radius:16px;padding:40px 36px;text-align:center}
+  .cta-box h3{font-family:var(--serif);font-weight:500;font-size:26px;margin-bottom:10px}
+  .cta-box p{color:#aeb8c8;font-size:16px;margin-bottom:24px}
+  .cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{padding:12px 22px;border-radius:8px;font-size:14px;font-weight:500;text-decoration:none;transition:transform .2s;display:inline-block}
+  .btn-primary{background:#fff;color:var(--ink)}
+  .btn-secondary{background:#ffffff1a;color:#fff;border:1px solid #ffffff2e}
+  .btn:hover{transform:translateY(-2px)}
+  @media (max-width:480px){article{padding:48px 22px 50px}.lede{font-size:18px}h2{font-size:24px}p,ul li{font-size:16px}}
+
+  .post-hero{margin:0 0 44px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#0f1b2d 0%,#16273f 55%,#1e3a5f 100%);box-shadow:var(--shadow-card)}
+  .post-hero svg{display:block;width:100%;height:auto}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="mark">Rahul Bhushan Vemula.</a>
+    <a href="index.html#projects" class="nav-back">← Back to portfolio</a>
+  </div>
+</nav>
+<article>
+  <div class="eyebrow"><span class="dot"></span> Project Write-up · Full-Stack</div>
+  <h1>Building a bank you can <em>actually trust.</em></h1>
+  <div class="meta">
+    <span>Rahul Bhushan Vemula</span><span class="sep">·</span>
+    <span>~6 min read</span><span class="sep">·</span>
+    <span class="tag">Java</span><span class="tag">Spring Boot</span><span class="tag">React</span><span class="tag">MySQL</span>
+  </div>
+<div class="post-hero">
+    <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <radialGradient id="hglow" cx="78%" cy="30%" r="60%">
+          <stop offset="0%" stop-color="#2c4a73" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#2c4a73" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="720" height="240" fill="url(#hglow)"/>
+      <!-- credit card -->
+      <g transform="translate(90,80)" stroke="#ffffff" stroke-width="2">
+        <rect x="0" y="0" width="180" height="110" rx="12"/>
+        <rect x="20" y="34" width="30" height="24" rx="4" stroke="#8fb3da" stroke-width="1.6"/>
+        <g stroke="#8fb3da" stroke-width="1.4" opacity="0.8">
+          <path d="M62 40 Q70 47 62 54"/>
+          <path d="M70 35 Q82 47 70 59"/>
+        </g>
+        <g fill="#8fb3da" stroke="none">
+          <circle cx="22" cy="82" r="2"/><circle cx="30" cy="82" r="2"/><circle cx="38" cy="82" r="2"/><circle cx="46" cy="82" r="2"/>
+          <circle cx="62" cy="82" r="2"/><circle cx="70" cy="82" r="2"/><circle cx="78" cy="82" r="2"/><circle cx="86" cy="82" r="2"/>
+        </g>
+      </g>
+      <!-- flow arrow -->
+      <g stroke="#6fa0d6" stroke-width="1.5" opacity="0.7">
+        <path d="M300 135 h90"/><path d="M390 135 l-9 -5 M390 135 l-9 5"/>
+      </g>
+      <!-- shield with lock (security) -->
+      <g transform="translate(440,70)" stroke="#ffffff" stroke-width="2">
+        <path d="M50 0 L100 18 V60 Q100 110 50 130 Q0 110 0 60 V18 Z"/>
+        <g transform="translate(35,48)" stroke="#8fb3da" stroke-width="2">
+          <rect x="0" y="14" width="30" height="24" rx="4"/>
+          <path d="M6 14 V8 Q6 -2 15 -2 Q24 -2 24 8 V14"/>
+          <circle cx="15" cy="26" r="3" fill="#8fb3da" stroke="none"/>
+        </g>
+      </g>
+      <!-- DB cylinder -->
+      <g transform="translate(600,95)" stroke="#8fb3da" stroke-width="1.6" opacity="0.85">
+        <ellipse cx="35" cy="10" rx="35" ry="10"/>
+        <path d="M0 10 V60 Q0 70 35 70 Q70 70 70 60 V10"/>
+        <path d="M0 35 Q0 45 35 45 Q70 45 70 35" opacity="0.6"/>
+      </g>
+      <text x="635" y="190" fill="#8fb3da" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" opacity="0.8">MySQL</text>
+    </svg>
+  </div>
+  <p class="lede">
+    A banking app has one job above all others: never let money move when it shouldn't. I built one
+    end-to-end — accounts, transfers, deposits, transaction history — and most of the interesting work
+    wasn't the features. It was the <strong>security model underneath them.</strong>
+  </p>
+
+  <h2><span class="num">01</span>Why banking is a security problem first</h2>
+  <p>
+    Most CRUD apps treat security as a layer you add at the end. A banking system can't. Every endpoint
+    that touches a balance is a potential exploit, and the difference between a customer reading their
+    own statement and reading <em>someone else's</em> is one missing authorization check. So I designed
+    the app from the access model outward, not the features inward.
+  </p>
+  <p>
+    The core question I kept returning to: for every action, <em>who is allowed to do this, and how do I
+    prove it on the server?</em> Never trusting the client to answer that is the whole game.
+  </p>
+
+  <h2><span class="num">02</span>The authentication model</h2>
+  <p>
+    I used <strong>Spring Security with JWT</strong>. When a user logs in, the server issues a signed
+    token carrying their identity and role. Every subsequent request presents that token, and the server
+    verifies the signature before doing anything else. Because the token is signed, the client can't tamper
+    with it to promote itself — flipping a <code>customer</code> claim to <code>admin</code> breaks the
+    signature and the request is rejected.
+  </p>
+  <p>
+    The reason JWT fits banking well is that it's <strong>stateless</strong>: the server doesn't have to
+    store a session for every logged-in user, which keeps it simpler to scale. The trade-off is that tokens
+    are valid until they expire, so the design has to keep their lifetime short and scope them carefully.
+  </p>
+
+  <div class="callout">
+    <div class="label">The key principle</div>
+    <p>
+      Authentication answers <strong>"who are you?"</strong> Authorization answers <strong>"what are you
+      allowed to do?"</strong> Conflating the two is how data leaks happen. A logged-in customer is
+      authenticated — that doesn't mean they're authorized to touch the admin dashboard.
+    </p>
+  </div>
+
+  <h2><span class="num">03</span>Role-scoped access</h2>
+  <p>
+    The app has two kinds of users — customers and admins — and they see fundamentally different systems.
+    A customer manages their own accounts and transfers. An admin oversees the platform. Rather than hide
+    admin features in the UI and hope nobody finds the endpoint, every protected route checks the role
+    server-side. The UI hiding is a convenience; the server check is the actual security boundary.
+  </p>
+
+  <h2><span class="num">04</span>How a transfer actually flows</h2>
+  <div class="pipeline">
+    <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Authenticated request</h4><p>The React dashboard sends the transfer request with the user's JWT attached.</p></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Verify &amp; authorize</h4><p>Spring Security validates the token and confirms the user owns the source account.</p></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body"><h4>Execute the transaction</h4><p>The service debits one account and credits the other — as a single unit, so a partial transfer can't leave money in limbo.</p></div></div>
+    <div class="step"><div class="step-n">4</div><div class="step-body"><h4>Persist &amp; record</h4><p>MySQL stores the updated balances plus an immutable entry in the transaction history.</p></div></div>
+  </div>
+
+  <h2><span class="num">05</span>Why MySQL for the money</h2>
+  <p>
+    Financial data is the textbook case for a relational database. Balances, transactions, and audit logs
+    have strict relationships and demand consistency — you never want two transfers to race and corrupt a
+    balance. A relational store with proper transactional guarantees is exactly the right tool, which is
+    why I chose <strong>MySQL</strong> over anything looser. The transaction history doubles as an audit
+    trail: every movement is recorded, nothing is silently overwritten.
+  </p>
+
+  <h2><span class="num">06</span>What I took away</h2>
+  <p>
+    The lesson that stuck: <strong>in a system that handles money, the boring parts are the important
+    parts.</strong> Anyone can build a transfer form. Making sure that form can't be used to move money
+    that isn't yours — that's the engineering. Designing from the access model outward, and never trusting
+    the client to enforce its own permissions, is a habit I carry into everything I build now.
+  </p>
+</article>
+<div class="post-footer">
+  <div class="cta-box">
+    <h3>Want to see it running?</h3>
+    <p>There's a live demo, or I'm happy to walk through the security model.</p>
+    <div class="cta-btns">
+      <a href="https://online-banking-system-ivory.vercel.app" target="_blank" rel="noopener" class="btn btn-primary">Live demo →</a>
+      <a href="index.html#projects" class="btn btn-secondary">See more projects</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

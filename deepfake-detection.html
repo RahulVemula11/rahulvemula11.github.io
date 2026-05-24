@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Detecting Deepfakes Without Ever Seeing One — Rahul Bhushan Vemula</title>
+<meta name="description" content="How I built a deepfake video detection system that learns only from real videos — using a Convolutional Autoencoder with LSTM and anomaly detection instead of classification." />
+
+<!-- Open Graph -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Detecting Deepfakes Without Ever Seeing One" />
+<meta property="og:description" content="A deepfake detector that learns only from real videos — anomaly detection over classification, built with a Convolutional Autoencoder + LSTM." />
+<meta property="og:url" content="https://rahulvemula11.github.io/deepfake-detection.html" />
+<meta property="og:image" content="https://rahulvemula11.github.io/og-banner.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --bg:#fafaf7;
+    --bg-card:#ffffff;
+    --bg-soft:#f4f3ee;
+    --ink:#0f1b2d;
+    --ink-2:#2c3a52;
+    --ink-dim:#5a6478;
+    --ink-mute:#8a92a3;
+    --accent:#1e3a5f;
+    --accent-2:#2c4a73;
+    --accent-soft:#1e3a5f0a;
+    --line:#e4e2db;
+    --line-strong:#d4d0c4;
+    --shadow-card:0 1px 3px rgba(15,27,45,.04);
+    --shadow-hover:0 12px 32px -16px rgba(15,27,45,.18);
+    --sans:'Inter', system-ui, -apple-system, sans-serif;
+    --serif:'Source Serif 4', Georgia, serif;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --maxw:720px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans);font-weight:400;line-height:1.7;
+    color:var(--ink-2);background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Top nav */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(250,250,247,.85);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:var(--maxw);margin:0 auto;padding:18px 28px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .mark{font-family:var(--serif);font-weight:600;font-size:18px;color:var(--ink);text-decoration:none}
+  .nav-back{
+    font-size:14px;color:var(--ink-dim);text-decoration:none;
+    display:inline-flex;align-items:center;gap:7px;transition:color .2s;
+  }
+  .nav-back:hover{color:var(--accent)}
+
+  /* Article */
+  article{max-width:var(--maxw);margin:0 auto;padding:72px 28px 100px}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:9px;
+    font-size:13px;font-weight:500;color:var(--accent);
+    background:var(--accent-soft);padding:7px 14px;border-radius:99px;
+    border:1px solid #1e3a5f1a;margin-bottom:28px;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:#16a34a}
+
+  h1{
+    font-family:var(--serif);font-weight:600;
+    font-size:clamp(34px,5.5vw,52px);line-height:1.1;
+    letter-spacing:-.02em;color:var(--ink);margin-bottom:22px;
+  }
+  h1 em{font-style:italic;color:var(--accent)}
+
+  .meta{
+    display:flex;flex-wrap:wrap;gap:16px;align-items:center;
+    font-size:14px;color:var(--ink-mute);
+    padding-bottom:36px;margin-bottom:44px;border-bottom:1px solid var(--line);
+  }
+  .meta .sep{color:var(--line-strong)}
+  .tag{
+    font-family:var(--mono);font-size:12px;color:var(--accent-2);
+    background:var(--bg-soft);padding:3px 10px;border-radius:5px;
+  }
+
+  .lede{
+    font-size:21px;line-height:1.6;color:var(--ink-2);
+    font-weight:400;margin-bottom:40px;
+  }
+  .lede strong{color:var(--ink);font-weight:600}
+
+  h2{
+    font-family:var(--serif);font-weight:600;font-size:28px;
+    letter-spacing:-.01em;color:var(--ink);
+    margin:52px 0 18px;
+  }
+  h2 .num{
+    font-family:var(--mono);font-size:14px;font-weight:500;
+    color:var(--accent);margin-right:12px;vertical-align:middle;
+  }
+
+  p{margin-bottom:22px;font-size:17px}
+  p strong{color:var(--ink);font-weight:600}
+  article a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+
+  /* Callout */
+  .callout{
+    background:var(--bg-card);border:1px solid var(--line);
+    border-left:3px solid var(--accent);
+    border-radius:10px;padding:24px 26px;margin:32px 0;
+    box-shadow:var(--shadow-card);
+  }
+  .callout .label{
+    font-family:var(--mono);font-size:11px;letter-spacing:1px;
+    text-transform:uppercase;color:var(--accent);margin-bottom:10px;
+  }
+  .callout p{margin:0;font-size:16px;color:var(--ink-2)}
+
+  /* Pipeline steps */
+  .pipeline{
+    display:flex;flex-direction:column;gap:0;margin:32px 0;
+    background:var(--bg-card);border:1px solid var(--line);
+    border-radius:12px;overflow:hidden;box-shadow:var(--shadow-card);
+  }
+  .step{
+    display:flex;gap:18px;padding:20px 24px;
+    border-bottom:1px solid var(--line);
+  }
+  .step:last-child{border-bottom:none}
+  .step-n{
+    flex:none;width:30px;height:30px;border-radius:8px;
+    background:var(--accent);color:#fff;
+    font-family:var(--mono);font-size:14px;font-weight:500;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .step-body h4{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:4px}
+  .step-body p{margin:0;font-size:15px;color:var(--ink-dim)}
+
+  /* Code */
+  code{font-family:var(--mono);font-size:14px;background:var(--bg-soft);padding:2px 7px;border-radius:5px;color:var(--accent-2)}
+
+  /* Stat grid */
+  .stat-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:32px 0;
+  }
+  .stat{
+    background:var(--bg-card);border:1px solid var(--line);
+    border-radius:12px;padding:22px 18px;text-align:center;
+    box-shadow:var(--shadow-card);
+  }
+  .stat .v{font-family:var(--serif);font-size:34px;font-weight:600;color:var(--accent);line-height:1}
+  .stat .l{font-size:12px;color:var(--ink-mute);margin-top:8px;letter-spacing:.3px}
+
+  /* Results table */
+  .rtable{
+    width:100%;border-collapse:collapse;margin:24px 0;
+    font-size:15px;background:var(--bg-card);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  }
+  .rtable th{
+    background:var(--bg-soft);text-align:left;padding:13px 18px;
+    font-family:var(--sans);font-size:12px;font-weight:600;
+    letter-spacing:.5px;text-transform:uppercase;color:var(--ink-dim);
+    border-bottom:1px solid var(--line);
+  }
+  .rtable td{padding:13px 18px;border-bottom:1px solid var(--line);color:var(--ink-2)}
+  .rtable tr:last-child td{border-bottom:none}
+  .rtable td:first-child{font-weight:600;color:var(--ink)}
+
+  ul{margin:0 0 22px 0;padding-left:0;list-style:none}
+  ul li{
+    position:relative;padding-left:26px;margin-bottom:12px;font-size:17px;
+  }
+  ul li::before{
+    content:"";position:absolute;left:4px;top:11px;
+    width:6px;height:6px;border-radius:50%;background:var(--accent);
+  }
+
+  /* Footer CTA */
+  .post-footer{
+    max-width:var(--maxw);margin:0 auto;padding:0 28px 90px;
+  }
+  .cta-box{
+    background:var(--ink);color:#fff;border-radius:16px;
+    padding:40px 36px;text-align:center;
+  }
+  .cta-box h3{font-family:var(--serif);font-weight:500;font-size:26px;margin-bottom:10px}
+  .cta-box p{color:#aeb8c8;font-size:16px;margin-bottom:24px}
+  .cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{
+    padding:12px 22px;border-radius:8px;font-size:14px;font-weight:500;
+    text-decoration:none;transition:transform .2s, background .2s;
+    display:inline-block;
+  }
+  .btn-primary{background:#fff;color:var(--ink)}
+  .btn-secondary{background:#ffffff1a;color:#fff;border:1px solid #ffffff2e}
+  .btn:hover{transform:translateY(-2px)}
+
+  @media (max-width:480px){
+    article{padding:48px 22px 70px}
+    .lede{font-size:18px}
+    h2{font-size:24px}
+    p, ul li{font-size:16px}
+  }
+
+  .post-hero{margin:0 0 44px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#0f1b2d 0%,#16273f 55%,#1e3a5f 100%);box-shadow:var(--shadow-card)}
+  .post-hero svg{display:block;width:100%;height:auto}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="mark">Rahul Bhushan Vemula.</a>
+    <a href="index.html#projects" class="nav-back">← Back to portfolio</a>
+  </div>
+</nav>
+
+<article>
+  <div class="eyebrow"><span class="dot"></span> Project Write-up · Final-Year Thesis</div>
+
+  <h1>Detecting deepfakes <em>without ever seeing one.</em></h1>
+
+  <div class="meta">
+    <span>Rahul Bhushan Vemula</span>
+    <span class="sep">·</span>
+    <span>~7 min read</span>
+    <span class="sep">·</span>
+    <span class="tag">Python</span>
+    <span class="tag">TensorFlow</span>
+    <span class="tag">OpenCV</span>
+    <span class="tag">Flask</span>
+  </div>
+
+<div class="post-hero">
+    <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <radialGradient id="hglow" cx="78%" cy="30%" r="60%">
+          <stop offset="0%" stop-color="#2c4a73" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#2c4a73" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="720" height="240" fill="url(#hglow)"/>
+      <!-- dotted scan frame -->
+      <g stroke="#6fa0d6" stroke-width="1.5" opacity="0.5">
+        <path d="M60 50 h26 M60 50 v26"/><path d="M300 50 h-26 M300 50 v26"/>
+        <path d="M60 190 h26 M60 190 v-26"/><path d="M300 190 h-26 M300 190 v-26"/>
+      </g>
+      <!-- REAL face (solid) -->
+      <g transform="translate(140,120)" stroke="#ffffff" stroke-width="2">
+        <ellipse cx="0" cy="0" rx="42" ry="52"/>
+        <circle cx="-15" cy="-8" r="3" fill="#ffffff"/>
+        <circle cx="15" cy="-8" r="3" fill="#ffffff"/>
+        <path d="M-12 20 Q0 30 12 20"/>
+      </g>
+      <text x="140" y="55" fill="#8fb3da" font-family="Inter,sans-serif" font-size="14" font-weight="600" text-anchor="middle" letter-spacing="2">REAL</text>
+      <!-- arrow / flow -->
+      <g stroke="#6fa0d6" stroke-width="1.5" opacity="0.7">
+        <path d="M205 120 h70"/><path d="M275 120 l-8 -5 M275 120 l-8 5"/>
+      </g>
+      <!-- latent dots -->
+      <g fill="#6fa0d6">
+        <circle cx="232" cy="105" r="2"/><circle cx="240" cy="118" r="2"/><circle cx="232" cy="131" r="2"/><circle cx="248" cy="112" r="2"/><circle cx="248" cy="126" r="2"/>
+      </g>
+      <!-- FAKE face (dashed + glitch) -->
+      <g transform="translate(360,120)" stroke="#6fa0d6" stroke-width="2" stroke-dasharray="5 4">
+        <ellipse cx="0" cy="0" rx="42" ry="52"/>
+      </g>
+      <g transform="translate(360,120)" stroke="#ffffff" stroke-width="2">
+        <line x1="-20" y1="-10" x2="-8" y2="-6"/>
+        <line x1="8" y1="-10" x2="20" y2="-6"/>
+        <rect x="-14" y="14" width="28" height="6" opacity="0.8"/>
+      </g>
+      <!-- glitch bars over fake -->
+      <g stroke="#c5d3e6" stroke-width="1" opacity="0.5">
+        <line x1="320" y1="95" x2="400" y2="95"/>
+        <line x1="320" y1="145" x2="400" y2="145"/>
+      </g>
+      <text x="360" y="55" fill="#8fb3da" font-family="Inter,sans-serif" font-size="14" font-weight="600" text-anchor="middle" letter-spacing="2">FAKE</text>
+      <!-- temporal frames strip (LSTM) -->
+      <g transform="translate(480,90)" stroke="#8fb3da" stroke-width="1.5" opacity="0.85">
+        <rect x="0" y="0" width="40" height="56" rx="4"/>
+        <rect x="50" y="0" width="40" height="56" rx="4" opacity="0.75"/>
+        <rect x="100" y="0" width="40" height="56" rx="4" opacity="0.55"/>
+        <rect x="150" y="0" width="40" height="56" rx="4" opacity="0.35"/>
+      </g>
+      <text x="575" y="170" fill="#8fb3da" font-family="'JetBrains Mono',monospace" font-size="11" text-anchor="middle" opacity="0.8">temporal frames</text>
+    </svg>
+  </div>
+  <p class="lede">
+    Most deepfake detectors are trained on a library of known fakes. Mine never sees a single one.
+    It learns what <strong>real</strong> looks like — and flags anything that doesn't fit. It needs
+    zero labelled fakes in training and runs on a plain CPU.
+    Here's why I built it that way.
+  </p>
+
+  <h2><span class="num">01</span>The problem with training on fakes</h2>
+  <p>
+    The obvious way to build a deepfake detector is a classifier: feed it thousands of real videos
+    and thousands of fake ones, and let it learn the boundary between the two. It works — until it
+    meets a fake made by a method it has never seen.
+  </p>
+  <p>
+    Generation techniques move fast. A model trained on last year's face-swaps doesn't necessarily
+    recognise this year's diffusion-based ones. A classifier is only ever as good as the fakes in its
+    training set, and that set is always behind. I wanted something that wouldn't go stale the moment
+    a new generator appeared.
+  </p>
+
+  <h2><span class="num">02</span>Reframing it as anomaly detection</h2>
+  <p>
+    So I flipped the question. Instead of <em>"does this look like a known fake?"</em> I asked
+    <em>"does this look like a real video at all?"</em>
+  </p>
+  <p>
+    That's an anomaly-detection problem, and the tool for it is an <strong>autoencoder</strong>. You
+    train it on real videos only. It learns to compress a frame down to a compact representation and
+    then reconstruct it. Trained on enough real footage, it gets very good at rebuilding real faces —
+    and noticeably bad at rebuilding anything that breaks the patterns it learned. That reconstruction
+    error becomes the signal.
+  </p>
+
+  <div class="callout">
+    <div class="label">The core idea</div>
+    <p>
+      A fake is never explicitly defined. It's simply <strong>whatever the model struggles to reconstruct.</strong>
+      High reconstruction error → likely manipulated. This is what lets it generalise to fakes it was
+      never trained on.
+    </p>
+  </div>
+
+  <h2><span class="num">03</span>Why Convolutional Autoencoder + LSTM</h2>
+  <p>
+    A deepfake gives itself away in two ways, and I wanted to catch both:
+  </p>
+  <ul>
+    <li><strong>Spatial artifacts</strong> — within a single frame: blending seams around the face, inconsistent lighting, warped textures. The <strong>convolutional</strong> layers handle this, the same way a CNN learns image features.</li>
+    <li><strong>Temporal artifacts</strong> — across frames: a flicker between frames, unnatural blinking, motion that doesn't quite track. A single-frame model misses these entirely. The <strong>LSTM</strong> layer reads the sequence of frames and catches inconsistencies over time.</li>
+  </ul>
+  <p>
+    Put together: convolutional layers extract per-frame features, the LSTM models how those features
+    should evolve across a real clip, and the decoder reconstructs the sequence. When the temporal flow
+    is off — as it often is in a generated video — the reconstruction breaks down and the error spikes.
+  </p>
+
+  <h2><span class="num">04</span>The pipeline, end to end</h2>
+  <div class="pipeline">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-body">
+        <h4>Frame extraction &amp; face cropping</h4>
+        <p>OpenCV pulls frames from the uploaded video and isolates the face region, so the model focuses on where manipulation actually happens.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-body">
+        <h4>Sequence assembly</h4>
+        <p>Cropped faces are grouped into short ordered sequences — the unit the LSTM reasons over.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-body">
+        <h4>Reconstruction</h4>
+        <p>The Convolutional Autoencoder + LSTM compresses and rebuilds each sequence, trained only on real footage from <strong>FaceForensics++</strong>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-body">
+        <h4>Scoring &amp; verdict</h4>
+        <p>Reconstruction error is compared against a threshold. Above it → flagged as likely fake. A real-or-fake verdict is returned to the user.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2><span class="num">05</span>Does it actually work?</h2>
+  <p>
+    I evaluated it on the <strong>FaceForensics++ (C23)</strong> dataset — compressed, real-world-quality
+    video, which is exactly where a lot of unsupervised detectors fall apart. The system held up well on
+    both real and manipulated clips, and the part I care about most is <em>why</em> it held up.
+  </p>
+  <p>
+    It clearly <strong>outperformed autoencoder-only baselines</strong> — the kind that look at single
+    frames in isolation. The temporal LSTM layer is doing real work: a fake that looks clean frame by
+    frame still betrays itself in how it moves across frames, and that's the signal a spatial-only model
+    misses entirely. Just as importantly, it runs on a <strong>plain CPU</strong> with no GPU required,
+    which is the whole reason the web app is practical to deploy at all.
+  </p>
+
+  <div class="callout">
+    <div class="label">Honest about the limits</div>
+    <p>
+      It isn't perfect — some fakes still slip through, and the decision threshold needs calibration per
+      compression level. Reconstruction error is a spectrum, not a clean line. I'd rather state that
+      plainly than oversell the system.
+    </p>
+  </div>
+
+  <h2><span class="num">06</span>Wrapping it in something usable</h2>
+  <p>
+    A model in a notebook isn't a project — it's a draft. So I deployed it as a <strong>Flask web
+    application</strong>: a user logs in, uploads an MP4 or AVI, and gets a REAL/FAKE verdict back with a
+    confidence score — typically analysing 8–20 sampled frames per clip. Every prediction is stored per
+    account in a <strong>SQLite</strong> database, so there's a full history dashboard. The point was to
+    take it the full distance — from a research idea to something a non-technical person could click through.
+  </p>
+
+  <div class="callout">
+    <div class="label">What I'd build next</div>
+    <p>
+      Add <strong>Grad-CAM</strong> so the app can show <em>which</em> facial regions drove a FAKE
+      verdict — turning a black-box score into something a user can actually trust. After that:
+      live-stream detection and separating manipulation types (Face2Face, FaceSwap) into their own classes.
+    </p>
+  </div>
+
+  <h2><span class="num">07</span>What I took away</h2>
+  <p>
+    The lesson that stuck with me wasn't about model architecture — it was about <strong>framing</strong>.
+    Treating detection as "recognise the fake" quietly assumes you'll always have examples of the fake.
+    Treating it as "recognise the real" removes that dependency entirely. Same data, same tools, a very
+    different and more durable system — just from asking the question the other way around.
+  </p>
+  <p>
+    That instinct — interrogate the framing before reaching for the model — is the one I carry into the
+    AI work I do now.
+  </p>
+</article>
+
+<div class="post-footer">
+  <div class="cta-box">
+    <h3>Want the full breakdown?</h3>
+    <p>Happy to walk through the architecture, the training setup, or the deployment.</p>
+    <div class="cta-btns">
+      <a href="mailto:rahulbushan0@gmail.com" class="btn btn-primary">Email me →</a>
+      <a href="index.html#projects" class="btn btn-secondary">See more projects</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

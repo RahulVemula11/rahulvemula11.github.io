@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>One System, Three Kinds of Users — Rahul Bhushan Vemula</title>
+<meta name="description" content="A full hospital management platform — Spring Boot + Angular — built around clean role-based access for patients, doctors, and admins." />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="One System, Three Kinds of Users" />
+<meta property="og:description" content="A full hospital management platform — Spring Boot + Angular — built around clean role-based access for patients, doctors, and admins." />
+<meta property="og:url" content="https://rahulvemula11.github.io/hospital-management.html" />
+<meta property="og:image" content="https://rahulvemula11.github.io/og-banner.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#fafaf7;--bg-card:#ffffff;--bg-soft:#f4f3ee;
+    --ink:#0f1b2d;--ink-2:#2c3a52;--ink-dim:#5a6478;--ink-mute:#8a92a3;
+    --accent:#1e3a5f;--accent-2:#2c4a73;--accent-soft:#1e3a5f0a;
+    --line:#e4e2db;--line-strong:#d4d0c4;
+    --shadow-card:0 1px 3px rgba(15,27,45,.04);
+    --sans:'Inter',system-ui,-apple-system,sans-serif;
+    --serif:'Source Serif 4',Georgia,serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --maxw:720px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);font-weight:400;line-height:1.7;color:var(--ink-2);background:var(--bg);-webkit-font-smoothing:antialiased}
+  nav{position:sticky;top:0;z-index:50;background:rgba(250,250,247,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:var(--maxw);margin:0 auto;padding:18px 28px;display:flex;justify-content:space-between;align-items:center}
+  .mark{font-family:var(--serif);font-weight:600;font-size:18px;color:var(--ink);text-decoration:none}
+  .nav-back{font-size:14px;color:var(--ink-dim);text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:color .2s}
+  .nav-back:hover{color:var(--accent)}
+  article{max-width:var(--maxw);margin:0 auto;padding:72px 28px 60px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--accent);background:var(--accent-soft);padding:7px 14px;border-radius:99px;border:1px solid #1e3a5f1a;margin-bottom:28px}
+  .dot{width:7px;height:7px;border-radius:50%;background:#16a34a}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(34px,5.5vw,52px);line-height:1.1;letter-spacing:-.02em;color:var(--ink);margin-bottom:22px}
+  h1 em{font-style:italic;color:var(--accent)}
+  .meta{display:flex;flex-wrap:wrap;gap:16px;align-items:center;font-size:14px;color:var(--ink-mute);padding-bottom:36px;margin-bottom:44px;border-bottom:1px solid var(--line)}
+  .meta .sep{color:var(--line-strong)}
+  .tag{font-family:var(--mono);font-size:12px;color:var(--accent-2);background:var(--bg-soft);padding:3px 10px;border-radius:5px}
+  .lede{font-size:21px;line-height:1.6;color:var(--ink-2);font-weight:400;margin-bottom:40px}
+  .lede strong{color:var(--ink);font-weight:600}
+  h2{font-family:var(--serif);font-weight:600;font-size:28px;letter-spacing:-.01em;color:var(--ink);margin:52px 0 18px}
+  h2 .num{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--accent);margin-right:12px;vertical-align:middle}
+  p{margin-bottom:22px;font-size:17px}
+  p strong{color:var(--ink);font-weight:600}
+  article a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+  .callout{background:var(--bg-card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:24px 26px;margin:32px 0;box-shadow:var(--shadow-card)}
+  .callout .label{font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .callout p{margin:0;font-size:16px;color:var(--ink-2)}
+  .pipeline{display:flex;flex-direction:column;margin:32px 0;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-card)}
+  .step{display:flex;gap:18px;padding:20px 24px;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:none}
+  .step-n{flex:none;width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;font-family:var(--mono);font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center}
+  .step-body h4{font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink);margin-bottom:4px}
+  .step-body p{margin:0;font-size:15px;color:var(--ink-dim)}
+  code{font-family:var(--mono);font-size:14px;background:var(--bg-soft);padding:2px 7px;border-radius:5px;color:var(--accent-2)}
+  ul{margin:0 0 22px 0;padding-left:0;list-style:none}
+  ul li{position:relative;padding-left:26px;margin-bottom:12px;font-size:17px}
+  ul li::before{content:"";position:absolute;left:4px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .post-footer{max-width:var(--maxw);margin:0 auto;padding:0 28px 90px}
+  .cta-box{background:var(--ink);color:#fff;border-radius:16px;padding:40px 36px;text-align:center}
+  .cta-box h3{font-family:var(--serif);font-weight:500;font-size:26px;margin-bottom:10px}
+  .cta-box p{color:#aeb8c8;font-size:16px;margin-bottom:24px}
+  .cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn{padding:12px 22px;border-radius:8px;font-size:14px;font-weight:500;text-decoration:none;transition:transform .2s;display:inline-block}
+  .btn-primary{background:#fff;color:var(--ink)}
+  .btn-secondary{background:#ffffff1a;color:#fff;border:1px solid #ffffff2e}
+  .btn:hover{transform:translateY(-2px)}
+  @media (max-width:480px){article{padding:48px 22px 50px}.lede{font-size:18px}h2{font-size:24px}p,ul li{font-size:16px}}
+
+  .post-hero{margin:0 0 44px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#0f1b2d 0%,#16273f 55%,#1e3a5f 100%);box-shadow:var(--shadow-card)}
+  .post-hero svg{display:block;width:100%;height:auto}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="mark">Rahul Bhushan Vemula.</a>
+    <a href="index.html#projects" class="nav-back">← Back to portfolio</a>
+  </div>
+</nav>
+<article>
+  <div class="eyebrow"><span class="dot"></span> Project Write-up · Full-Stack</div>
+  <h1>One system, <em>three kinds of users.</em></h1>
+  <div class="meta">
+    <span>Rahul Bhushan Vemula</span><span class="sep">·</span>
+    <span>~6 min read</span><span class="sep">·</span>
+    <span class="tag">Java</span><span class="tag">Spring Boot</span><span class="tag">Angular</span><span class="tag">Spring Security</span><span class="tag">MySQL</span>
+  </div>
+<div class="post-hero">
+    <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <radialGradient id="hglow" cx="78%" cy="30%" r="60%">
+          <stop offset="0%" stop-color="#2c4a73" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#2c4a73" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="720" height="240" fill="url(#hglow)"/>
+      <!-- three role figures -->
+      <g transform="translate(70,70)" stroke="#ffffff" stroke-width="2">
+        <circle cx="24" cy="16" r="14"/><path d="M2 60 Q2 32 24 32 Q46 32 46 60"/>
+      </g>
+      <text x="94" y="142" fill="#8fb3da" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" letter-spacing="1">PATIENT</text>
+      <g transform="translate(70,158)" stroke="#8fb3da" stroke-width="2" opacity="0.85">
+        <circle cx="24" cy="14" r="12"/><path d="M4 52 Q4 28 24 28 Q44 28 44 52"/>
+        <!-- stethoscope hint (cross) -->
+        <path d="M58 20 v14 M51 27 h14" stroke="#6fa0d6" stroke-width="2"/>
+      </g>
+      <text x="94" y="222" fill="#8fb3da" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" letter-spacing="1">DOCTOR</text>
+      <!-- connecting lines to hub -->
+      <g stroke="#6fa0d6" stroke-width="1.5" opacity="0.6">
+        <path d="M150 100 Q230 100 300 120"/>
+        <path d="M150 180 Q230 180 300 130"/>
+      </g>
+      <!-- central system / shield hub -->
+      <g transform="translate(310,75)" stroke="#ffffff" stroke-width="2">
+        <rect x="0" y="0" width="150" height="100" rx="12"/>
+        <!-- plus medical cross -->
+        <g transform="translate(75,50)" stroke="#6fa0d6" stroke-width="3">
+          <line x1="-16" y1="0" x2="16" y2="0"/><line x1="0" y1="-16" x2="0" y2="16"/>
+        </g>
+        <!-- role lock corner -->
+        <g transform="translate(118,12)" stroke="#8fb3da" stroke-width="1.5">
+          <rect x="0" y="6" width="16" height="12" rx="2"/><path d="M3 6 V3 Q3 -2 8 -2 Q13 -2 13 3 V6"/>
+        </g>
+      </g>
+      <text x="385" y="195" fill="#8fb3da" font-family="'JetBrains Mono',monospace" font-size="10" text-anchor="middle" opacity="0.8">role-based access</text>
+      <!-- admin + DB on right -->
+      <g transform="translate(500,72)" stroke="#8fb3da" stroke-width="2" opacity="0.85">
+        <circle cx="24" cy="14" r="12"/><path d="M4 52 Q4 28 24 28 Q44 28 44 52"/>
+      </g>
+      <text x="524" y="138" fill="#8fb3da" font-family="Inter,sans-serif" font-size="11" text-anchor="middle" letter-spacing="1">ADMIN</text>
+      <g transform="translate(600,95)" stroke="#8fb3da" stroke-width="1.5" opacity="0.8">
+        <ellipse cx="30" cy="8" rx="30" ry="8"/><path d="M0 8 V58 Q0 66 30 66 Q60 66 60 58 V8"/>
+        <path d="M0 33 Q0 41 30 41 Q60 41 60 33" opacity="0.6"/>
+      </g>
+    </svg>
+  </div>
+  <p class="lede">
+    A hospital runs on three groups of people who need very different things from the same system: patients,
+    doctors, and administrators. This platform brings all three into one place — and the central challenge
+    was giving each the <strong>right view and the right permissions</strong> without the system becoming a mess.
+  </p>
+
+  <h2><span class="num">01</span>One platform, three very different users</h2>
+  <p>
+    A patient wants to register and book appointments. A doctor wants their schedule and their patients'
+    records. An admin runs the whole operation. The same underlying data — records, schedules, billing,
+    prescriptions — has to serve all three, but each role should only ever see and touch what's appropriate
+    to them. Designing that role separation cleanly was the heart of the project.
+  </p>
+
+  <h2><span class="num">02</span>Role-based access as the backbone</h2>
+  <p>
+    I used <strong>Spring Security</strong> to enforce role-based access across the platform. Rather than
+    building three separate apps, there's one system where every protected action checks the user's role on
+    the server. A patient simply cannot reach a doctor's full record view, because the boundary is enforced
+    in the backend — not hidden in the interface and hoped for.
+  </p>
+
+  <div class="callout">
+    <div class="label">The key principle</div>
+    <p>
+      In a system holding medical records, access control isn't a feature — it's the foundation. Health data
+      is sensitive and often regulated, so <strong>who can see what</strong> has to be decided server-side and
+      enforced on every request, never left to the frontend.
+    </p>
+  </div>
+
+  <h2><span class="num">03</span>The modules, and how they fit</h2>
+  <ul>
+    <li><strong>Patient registration &amp; scheduling</strong> — the front door: patients enrol and book appointments against real doctor availability.</li>
+    <li><strong>Electronic Health Records (EHR)</strong> — the clinical core, where patient history lives and doctors work.</li>
+    <li><strong>Billing &amp; prescriptions</strong> — the operational layer tying care to records.</li>
+  </ul>
+  <p>
+    All of it sits on <strong>MySQL</strong>, which is the right call for hospital data: patients, doctors,
+    appointments, and billing are deeply relational, and consistency across them is non-negotiable. An
+    appointment that references a doctor who doesn't exist, or a prescription with no patient, should be
+    impossible by design.
+  </p>
+
+  <h2><span class="num">04</span>Why Angular on the front</h2>
+  <p>
+    The frontend is built in <strong>Angular</strong>. For an application this structured — multiple roles,
+    many forms, distinct dashboards — Angular's opinionated, component-driven structure helps keep a large
+    UI organised rather than letting it sprawl. Each role's dashboard is its own coherent surface over the
+    shared backend.
+  </p>
+
+  <h2><span class="num">05</span>What I took away</h2>
+  <p>
+    This project was a lesson in <strong>managing complexity through structure</strong>. The difficulty
+    wasn't any single feature — it was keeping patients, doctors, and admins cleanly separated while they
+    all draw on the same data. Role-based access, a relational core, and a component-structured frontend were
+    the three pillars that kept it coherent. Designing the boundaries first, then the features, is what made
+    it manageable.
+  </p>
+</article>
+<div class="post-footer">
+  <div class="cta-box">
+    <h3>Want to dig into the architecture?</h3>
+    <p>Happy to walk through the role model or the module design.</p>
+    <div class="cta-btns">
+      <a href="mailto:rahulbushan0@gmail.com" class="btn btn-primary">Email me →</a>
+      <a href="index.html#projects" class="btn btn-secondary">See more projects</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
