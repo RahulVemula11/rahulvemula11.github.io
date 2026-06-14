@@ -789,6 +789,23 @@
   .cred-link.verify{color:var(--ink-dim)}
   .cred-link.verify:hover{background:var(--ink-2);border-color:var(--ink-2);color:#fff}
   [data-theme="dark"] .cred-link.verify:hover{color:#0d1117}
+  /* Show-more toggle for credentials */
+  .creds-more{margin-top:16px}
+  .creds-more[hidden]{display:none}
+  .creds-toggle-wrap{display:flex;justify-content:center;margin-top:32px}
+  .creds-toggle{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:var(--sans);font-size:14px;font-weight:500;
+    color:var(--ink-2);cursor:pointer;
+    background:var(--bg-card);border:1px solid var(--line-strong);
+    border-radius:999px;padding:11px 22px;
+    box-shadow:var(--shadow-card);
+    transition:border-color .2s, color .2s, background .2s}
+  .creds-toggle:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .creds-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  .creds-toggle svg{width:16px;height:16px;transition:transform .3s ease}
+  .creds-toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+  @media (prefers-reduced-motion: reduce){.creds-toggle svg{transition:none}}
 
   /* CONTACT */
   .contact{text-align:center;padding:120px 0 100px;
@@ -2281,7 +2298,6 @@
 
     <div class="creds">
 
-      <!-- 1 · Udemy Full Stack Java -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/udemy-fullstack-java.pdf" target="_blank" rel="noopener" aria-label="View Udemy Fullstack Java certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 6 8 19l24 13 24-13z" fill="#a435f0"/><path d="M16 27v14c0 9 7 15 16 15s16-6 16-15V27l-6 3v11c0 6-4 9-10 9s-10-3-10-9V30z" fill="#5022c3"/></svg></span><img src="certs/thumbs/udemy-fullstack-java.jpg" alt="Udemy Fullstack Java certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Certification</div>
@@ -2300,7 +2316,6 @@
         </div>
       </div>
 
-      <!-- 2 · Udemy Data Science Bootcamp -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/udemy-datascience-bootcamp.pdf" target="_blank" rel="noopener" aria-label="View Udemy Datascience Bootcamp certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 6 8 19l24 13 24-13z" fill="#a435f0"/><path d="M16 27v14c0 9 7 15 16 15s16-6 16-15V27l-6 3v11c0 6-4 9-10 9s-10-3-10-9V30z" fill="#5022c3"/></svg></span><img src="certs/thumbs/udemy-datascience-bootcamp.jpg" alt="Udemy Datascience Bootcamp certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Certification</div>
@@ -2319,7 +2334,6 @@
         </div>
       </div>
 
-      <!-- 3 · NIELIT AI-ML Course -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/nielit-aiml-course.pdf" target="_blank" rel="noopener" aria-label="View Nielit Aiml Course certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="30" fill="#06038d"/><circle cx="32" cy="32" r="11" fill="none" stroke="#fff" stroke-width="2.5"/><g stroke="#fff" stroke-width="1.4"><line x1="32" y1="21" x2="32" y2="43"/><line x1="21" y1="32" x2="43" y2="32"/><line x1="24.2" y1="24.2" x2="39.8" y2="39.8"/><line x1="39.8" y1="24.2" x2="24.2" y2="39.8"/></g></svg></span><img src="certs/thumbs/nielit-aiml-course.jpg" alt="Nielit Aiml Course certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Certification · Grade S</div>
@@ -2334,7 +2348,34 @@
         </div>
       </div>
 
-      <!-- 4 · IBM Python Basics (edX) -->
+      <div class="cred reveal">
+        <a data-cert-view class="cred-thumb" href="certs/blackbucks-aiml-internship.pdf" target="_blank" rel="noopener" aria-label="View Blackbucks Aiml Internship certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 4l24 14v28L32 60 8 46V18z" fill="none" stroke="#1a1a1a" stroke-width="3"/><path d="M32 24c-3-6-7-6-7-6s2 4 1 7c-2-1-5 0-5 0s3 1 4 4c4 8 4 14 4 14s0-6 4-14c1-3 4-4 4-4s-3-1-5 0c-1-3 1-7 1-7s-4 0-7 6z" fill="#1a1a1a"/></svg></span><img src="certs/thumbs/blackbucks-aiml-internship.jpg" alt="Blackbucks Aiml Internship certificate preview" loading="lazy" width="640" height="400" /></a>
+        <div class="cred-type">Internship · 4 months</div>
+        <div class="cred-title">AI &amp; ML Engineer (Long-term)</div>
+        <div class="cred-issuer">Blackbucks Education · NEAT / APSCHE</div>
+        <div class="cred-meta">Dec 2025 – Apr 2026</div>
+        <div class="cred-links">
+          <a data-cert-view class="cred-link" href="certs/blackbucks-aiml-internship.pdf" target="_blank" rel="noopener" aria-label="View Blackbucks AI-ML internship certificate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            View
+          </a>
+        </div>
+      </div>
+
+      <div class="cred reveal">
+        <a data-cert-view class="cred-thumb" href="certs/eduskills-google-aiml.pdf" target="_blank" rel="noopener" aria-label="View Eduskills Google Aiml certificate"><span class="cred-logo"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M44 24c0-1.4-.1-2.8-.4-4H24v8h11.3c-.5 2.6-2 4.8-4.3 6.3v5.2h7C42 41.6 44 33.5 44 24z"/><path fill="#34A853" d="M24 46c5.9 0 10.8-2 14.4-5.3l-7-5.2c-2 1.3-4.5 2-7.4 2-5.7 0-10.5-3.8-12.2-9H4.5v5.4C8.1 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.5c-.5-1.3-.7-2.7-.7-4.5s.3-3.2.7-4.5v-5.4H4.5C3 17.6 2 20.7 2 24s1 6.4 2.5 9.4l7.3-4.9z"/><path fill="#EA4335" d="M24 10.7c3.2 0 6 .9 8.3 3.1l6.2-6.2C34.8 4 29.9 2 24 2 15.4 2 8.1 6.9 4.5 14.5l7.3 5.4c1.7-5.1 6.5-9.2 12.2-9.2z"/></svg></span><img src="certs/thumbs/eduskills-google-aiml.jpg" alt="Eduskills Google Aiml certificate preview" loading="lazy" width="640" height="400" /></a>
+        <div class="cred-type">Internship · 10 weeks</div>
+        <div class="cred-title">AI–ML Virtual Internship</div>
+        <div class="cred-issuer">EduSkills × Google for Developers · AICTE</div>
+        <div class="cred-meta">Oct – Dec 2025</div>
+        <div class="cred-links">
+          <a data-cert-view class="cred-link" href="certs/eduskills-google-aiml.pdf" target="_blank" rel="noopener" aria-label="View EduSkills Google AI-ML internship certificate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            View
+          </a>
+        </div>
+      </div>
+
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/ibm-python-basics.pdf" target="_blank" rel="noopener" aria-label="View Ibm Python Basics certificate"><span class="cred-logo"><svg viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg"><g fill="#0530ad"><rect x="2"  y="4"  width="18" height="3"/><rect x="2"  y="11" width="18" height="3"/><rect x="2"  y="18" width="18" height="3"/><rect x="2"  y="25" width="18" height="3"/><rect x="24" y="4"  width="16" height="3"/><rect x="24" y="11" width="16" height="3"/><rect x="24" y="18" width="16" height="3"/><rect x="24" y="25" width="16" height="3"/><rect x="44" y="4"  width="18" height="3"/><rect x="44" y="11" width="18" height="3"/><rect x="44" y="18" width="18" height="3"/><rect x="44" y="25" width="18" height="3"/></g></svg></span><img src="certs/thumbs/ibm-python-basics.jpg" alt="Ibm Python Basics certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Certification</div>
@@ -2353,7 +2394,10 @@
         </div>
       </div>
 
-      <!-- 5 · IBM Web Development (edX) -->
+    </div>
+
+    <div class="creds creds-more" id="credsMore" hidden>
+
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/ibm-web-development.pdf" target="_blank" rel="noopener" aria-label="View Ibm Web Development certificate"><span class="cred-logo"><svg viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg"><g fill="#0530ad"><rect x="2"  y="4"  width="18" height="3"/><rect x="2"  y="11" width="18" height="3"/><rect x="2"  y="18" width="18" height="3"/><rect x="2"  y="25" width="18" height="3"/><rect x="24" y="4"  width="16" height="3"/><rect x="24" y="11" width="16" height="3"/><rect x="24" y="18" width="16" height="3"/><rect x="24" y="25" width="16" height="3"/><rect x="44" y="4"  width="18" height="3"/><rect x="44" y="11" width="18" height="3"/><rect x="44" y="18" width="18" height="3"/><rect x="44" y="25" width="18" height="3"/></g></svg></span><img src="certs/thumbs/ibm-web-development.jpg" alt="Ibm Web Development certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Certification</div>
@@ -2372,7 +2416,6 @@
         </div>
       </div>
 
-      <!-- 6 · IBM Hardware & OS (edX) -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/ibm-hardware-os.pdf" target="_blank" rel="noopener" aria-label="View Ibm Hardware Os certificate"><span class="cred-logo"><svg viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg"><g fill="#0530ad"><rect x="2"  y="4"  width="18" height="3"/><rect x="2"  y="11" width="18" height="3"/><rect x="2"  y="18" width="18" height="3"/><rect x="2"  y="25" width="18" height="3"/><rect x="24" y="4"  width="16" height="3"/><rect x="24" y="11" width="16" height="3"/><rect x="24" y="18" width="16" height="3"/><rect x="24" y="25" width="16" height="3"/><rect x="44" y="4"  width="18" height="3"/><rect x="44" y="11" width="18" height="3"/><rect x="44" y="18" width="18" height="3"/><rect x="44" y="25" width="18" height="3"/></g></svg></span><img src="certs/thumbs/ibm-hardware-os.jpg" alt="Ibm Hardware Os certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Certification</div>
@@ -2391,7 +2434,6 @@
         </div>
       </div>
 
-      <!-- 7 · UC3M Java (edX) -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/uc3m-java-programming.pdf" target="_blank" rel="noopener" aria-label="View Uc3M Java Programming certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" rx="10" fill="#000f9f"/><text x="32" y="40" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#fff">uc3m</text></svg></span><img src="certs/thumbs/uc3m-java-programming.jpg" alt="Uc3M Java Programming certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Certification</div>
@@ -2410,7 +2452,6 @@
         </div>
       </div>
 
-      <!-- 8 · NPTEL Data Science for Engineers -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/nptel-data-science.pdf" target="_blank" rel="noopener" aria-label="View NPTEL Data Science for Engineers certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="30" fill="#8b1a1a"/><circle cx="32" cy="32" r="9" fill="none" stroke="#f5d97a" stroke-width="2.4"/><g stroke="#f5d97a" stroke-width="2"><line x1="32" y1="8" x2="32" y2="20"/><line x1="32" y1="44" x2="32" y2="56"/><line x1="8" y1="32" x2="20" y2="32"/><line x1="44" y1="32" x2="56" y2="32"/><line x1="15" y1="15" x2="24" y2="24"/><line x1="40" y1="40" x2="49" y2="49"/><line x1="49" y1="15" x2="40" y2="24"/><line x1="24" y1="40" x2="15" y2="49"/></g></svg></span><img src="certs/thumbs/nptel-data-science.jpg" alt="NPTEL Data Science for Engineers certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Certification · Elite</div>
@@ -2429,7 +2470,6 @@
         </div>
       </div>
 
-      <!-- 9 · Power BI Assessment -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/learntube-powerbi.pdf" target="_blank" rel="noopener" aria-label="View Learntube Powerbi certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" rx="14" fill="#0b9e57"/><path d="M26 22l18 10-18 10z" fill="#fff"/></svg></span><img src="certs/thumbs/learntube-powerbi.jpg" alt="Learntube Powerbi certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Certification</div>
@@ -2444,7 +2484,6 @@
         </div>
       </div>
 
-      <!-- 9 · Oracle Cloud Webinar -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/oracle-cloud-webinar.pdf" target="_blank" rel="noopener" aria-label="View Oracle Cloud Webinar certificate"><span class="cred-logo"><svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><text x="40" y="28" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="700" fill="#c74634" letter-spacing="1">ORACLE</text></svg></span><img src="certs/thumbs/oracle-cloud-webinar.jpg" alt="Oracle Cloud Webinar certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Participation</div>
@@ -2459,37 +2498,6 @@
         </div>
       </div>
 
-      <!-- 10 · Blackbucks AI-ML 4 month -->
-      <div class="cred reveal">
-        <a data-cert-view class="cred-thumb" href="certs/blackbucks-aiml-internship.pdf" target="_blank" rel="noopener" aria-label="View Blackbucks Aiml Internship certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 4l24 14v28L32 60 8 46V18z" fill="none" stroke="#1a1a1a" stroke-width="3"/><path d="M32 24c-3-6-7-6-7-6s2 4 1 7c-2-1-5 0-5 0s3 1 4 4c4 8 4 14 4 14s0-6 4-14c1-3 4-4 4-4s-3-1-5 0c-1-3 1-7 1-7s-4 0-7 6z" fill="#1a1a1a"/></svg></span><img src="certs/thumbs/blackbucks-aiml-internship.jpg" alt="Blackbucks Aiml Internship certificate preview" loading="lazy" width="640" height="400" /></a>
-        <div class="cred-type">Internship · 4 months</div>
-        <div class="cred-title">AI &amp; ML Engineer (Long-term)</div>
-        <div class="cred-issuer">Blackbucks Education · NEAT / APSCHE</div>
-        <div class="cred-meta">Dec 2025 – Apr 2026</div>
-        <div class="cred-links">
-          <a data-cert-view class="cred-link" href="certs/blackbucks-aiml-internship.pdf" target="_blank" rel="noopener" aria-label="View Blackbucks AI-ML internship certificate">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            View
-          </a>
-        </div>
-      </div>
-
-      <!-- 11 · EduSkills Google AI-ML -->
-      <div class="cred reveal">
-        <a data-cert-view class="cred-thumb" href="certs/eduskills-google-aiml.pdf" target="_blank" rel="noopener" aria-label="View Eduskills Google Aiml certificate"><span class="cred-logo"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M44 24c0-1.4-.1-2.8-.4-4H24v8h11.3c-.5 2.6-2 4.8-4.3 6.3v5.2h7C42 41.6 44 33.5 44 24z"/><path fill="#34A853" d="M24 46c5.9 0 10.8-2 14.4-5.3l-7-5.2c-2 1.3-4.5 2-7.4 2-5.7 0-10.5-3.8-12.2-9H4.5v5.4C8.1 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.5c-.5-1.3-.7-2.7-.7-4.5s.3-3.2.7-4.5v-5.4H4.5C3 17.6 2 20.7 2 24s1 6.4 2.5 9.4l7.3-4.9z"/><path fill="#EA4335" d="M24 10.7c3.2 0 6 .9 8.3 3.1l6.2-6.2C34.8 4 29.9 2 24 2 15.4 2 8.1 6.9 4.5 14.5l7.3 5.4c1.7-5.1 6.5-9.2 12.2-9.2z"/></svg></span><img src="certs/thumbs/eduskills-google-aiml.jpg" alt="Eduskills Google Aiml certificate preview" loading="lazy" width="640" height="400" /></a>
-        <div class="cred-type">Internship · 10 weeks</div>
-        <div class="cred-title">AI–ML Virtual Internship</div>
-        <div class="cred-issuer">EduSkills × Google for Developers · AICTE</div>
-        <div class="cred-meta">Oct – Dec 2025</div>
-        <div class="cred-links">
-          <a data-cert-view class="cred-link" href="certs/eduskills-google-aiml.pdf" target="_blank" rel="noopener" aria-label="View EduSkills Google AI-ML internship certificate">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            View
-          </a>
-        </div>
-      </div>
-
-      <!-- 12 · Blackbuck Java Full Stack 120hr -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/blackbuck-java-fullstack.pdf" target="_blank" rel="noopener" aria-label="View Blackbuck Java Fullstack certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><path d="M32 4l24 14v28L32 60 8 46V18z" fill="none" stroke="#1a1a1a" stroke-width="3"/><path d="M32 24c-3-6-7-6-7-6s2 4 1 7c-2-1-5 0-5 0s3 1 4 4c4 8 4 14 4 14s0-6 4-14c1-3 4-4 4-4s-3-1-5 0c-1-3 1-7 1-7s-4 0-7 6z" fill="#1a1a1a"/></svg></span><img src="certs/thumbs/blackbuck-java-fullstack.jpg" alt="Blackbuck Java Fullstack certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Internship · 120 hours</div>
@@ -2504,7 +2512,6 @@
         </div>
       </div>
 
-      <!-- 13 · SkillDzire Full Stack Java -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/skilldzire-fullstack-java.pdf" target="_blank" rel="noopener" aria-label="View Skilldzire Fullstack Java certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" rx="14" fill="#e23744"/><text x="32" y="44" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="32" font-weight="700" fill="#fff">S</text></svg></span><img src="certs/thumbs/skilldzire-fullstack-java.jpg" alt="Skilldzire Fullstack Java certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Internship · 2 months</div>
@@ -2519,7 +2526,6 @@
         </div>
       </div>
 
-      <!-- 14 · NIELIT AI-ML Internship 8 weeks -->
       <div class="cred reveal">
         <a data-cert-view class="cred-thumb" href="certs/nielit-aiml-internship.pdf" target="_blank" rel="noopener" aria-label="View Nielit Aiml Internship certificate"><span class="cred-logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="30" fill="#06038d"/><circle cx="32" cy="32" r="11" fill="none" stroke="#fff" stroke-width="2.5"/><g stroke="#fff" stroke-width="1.4"><line x1="32" y1="21" x2="32" y2="43"/><line x1="21" y1="32" x2="43" y2="32"/><line x1="24.2" y1="24.2" x2="39.8" y2="39.8"/><line x1="39.8" y1="24.2" x2="24.2" y2="39.8"/></g></svg></span><img src="certs/thumbs/nielit-aiml-internship.jpg" alt="Nielit Aiml Internship certificate preview" loading="lazy" width="640" height="400" /></a>
         <div class="cred-type">Internship · 8 weeks</div>
@@ -2534,6 +2540,13 @@
         </div>
       </div>
 
+    </div>
+
+    <div class="creds-toggle-wrap">
+      <button class="creds-toggle" id="credsToggle" aria-expanded="false" aria-controls="credsMore">
+        <span class="creds-toggle-label">Show 9 more</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
     </div>
   </div>
 </section>
@@ -3021,5 +3034,30 @@
   })();
 </script>
 
+<script>
+  // Credentials "Show more / less" toggle
+  (function(){
+    var btn  = document.getElementById('credsToggle');
+    var more = document.getElementById('credsMore');
+    if(!btn || !more) return;
+    var label = btn.querySelector('.creds-toggle-label');
+    var count = more.querySelectorAll('.cred').length;
+    label.textContent = 'Show ' + count + ' more';
+    btn.addEventListener('click', function(){
+      var hidden = more.hasAttribute('hidden');
+      if(hidden){
+        more.removeAttribute('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+        label.textContent = 'Show less';
+        // ensure reveal-on-scroll items are visible immediately
+        more.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); });
+      } else {
+        more.setAttribute('hidden', '');
+        btn.setAttribute('aria-expanded', 'false');
+        label.textContent = 'Show ' + count + ' more';
+      }
+    });
+  })();
+</script>
 </body>
 </html>
